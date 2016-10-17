@@ -5,6 +5,8 @@
 \usepackage{graphicx}
 \usepackage[margin=1in]{geometry}
 \usepackage{fancyhdr}
+\usepackage{longtable}
+\usepackage{lipsum}
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{5pt plus 1pt}
 \setlength{\headheight}{13.6pt}
@@ -32,6 +34,41 @@
   \newcommand\UID{uxxxxxxx}
   \newcommand\HWNUM{3}
 
+  \question{1}{easy relatives of 3-SAT}
+	\part{a} Given a caluse of a 2-CNF formula $x_{1} \vee x_{2}$. Goal is to prove that this clause is logically equivalent to the clause $x_{1} \Rightarrow x_{2}$.  The implication clause $x_{1} \Rightarrow x_{2}$ means, if $x_{1}$ is true, it implies $x_{2}$, else if $x_{1}$ is false then the implication doesn't fires and the result is true. Thus, when $x_{1}$ is false(or $\bar {x_{1}}$ is true), the clause is always true regardless of $x_{2}$. When $x_{1}$ is true, it implies the clause is determined by the result of $x_{2}$, that is if $x_{2}$ is true, then the result is true, and if $x_{2}$ is false, the result is false. Thus, if we make the truth table of $x_{1} \Rightarrow x_{2}$, the table will look as below: \newline
+\begin{table}[ht]
+  \caption{Truth Table of $x_{1} \Rightarrow x_{2}$}
+  \centering
+  \begin{tabular}{c c c }
+  \hline\hline
+  $x_{1}$ & $x_{2}$ & $x_{1} \Rightarrow x_{2}$ \\[0.5ex]
+  \hline
+  0 & 0 & 1 \\
+  0 & 1 & 1 \\
+  1 & 0 & 0 \\
+  1 & 1 & 1 \\ [0.5ex]
+  \end{tabular}
+  \label{table:nonlin}
+  \end{table}	  
 
+Below is the truth table of $\bar{x_{1}} \vee x_{2}$ \newline
+\begin{table}[ht]
+  \caption{Truth Table of $\bar{x_{1}} \vee x_{2}$}
+  \centering
+  \begin{tabular}{c c c }
+  \hline\hline
+  $x_{1}$ & $x_{2}$ & $\bar{x_{1}} \vee x_{2}$ \\[0.5ex]
+  \hline
+  0 & 0 & 1 \\
+  0 & 1 & 1 \\
+  1 & 0 & 0 \\
+  1 & 1 & 1 \\ [0.5ex]
+  \end{tabular}
+  \label{table:nonlin}
+  \end{table}	 
+
+  The truth tables of table-1 and table-2 are exactly the same thus implying that the clause $\bar{x_{1}} \vee x_{2}$ is equivalent to $x_{1} \Rightarrow x_{2}$. \newline
+
+  \part{b} Suppose we have a 2-CNF formula, comprising of m-clauses , such that each clause is of the form $x_{i} \vee x_{j}$, which means it is equivalent to (from our previous proof) both $\bar{x_{1}} \Rightarrow x_{2}$ and $\bar{x_{2}} \Rightarrow x_{1}$
 
 \end{document} 
