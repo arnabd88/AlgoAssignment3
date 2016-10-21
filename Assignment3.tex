@@ -161,9 +161,240 @@ Given an undirected graph, G=(V,E), a parameter k and an Oracle that answers Yes
 	\hspace*{1cm}		\} \newline
 	\hspace*{0.5cm}	\} \newline
 	\} \newline
+\newline
+\textbf {Description of the Algorithm} \newline
+    The function \textbf {findIndSet} is called with input as the Graph,G, and the parameter, k(the size of the independent set required to be found). It first queries the Oracle if this graph can have an independent set of size k. It the oracle answers no, it returns a NULL set,else it continues. We start with initialising 'i' as null and the 'IndSet' as null set. In general 'i' will contain the node under selection as described later, and IndSet will contain the set of nodes that will form the final independent set of size k. First select a random node, i,  from the graph G, and strip the graph off 'i' and its adjacent neighbours, because if i eventually becomes part of the independent set, then i's adjacent neighbours will not be memebers of the independent set. Also, if i is part of the independent set, then the stripped graph must contain an independent set of size (k-1). Thus, we query to the oracle, if the stripped graph, $G^\prime$, contains an independent set of size (k-1). If the oracle answers no, that means this node 'i' cannot be part of the independent set. So, we do not update the original graph and iterate back to the start of the while loop selecting a new node in the graph G. If the oracle had answered Yes, then we update the 'IndSet' with the current node, i, and update the graph G with the stripped graph $G^\prime$, and reduce k by 1. Thus with the reduced graph and new k, we iterate back to the while loop. Everytime a node has been considered, it is not considered again, which is taken care by updating G in the first line of the while loop , G=G-i. \newline
+The algorithm will at max go through the \textbf {if} inside the while loop for \textbf {k} times, and bypass the \textbf {if} for (n-k) times. Thus, \newline
+Total Running Time of the Algorithm = $O((k) + (n-k) )$ = $O(n)$ (Proved). \newline
+
+\question{3}{Reductions, reductions \dots}
+
+\part{a} For n variables $x_{1}, x_{2}, \dots , x_{n}$, an instance of ILP is defined by a set of linear constraints,that is, constraints of the form: \newline
+\[ a_{1}x_{1} + a_{2}x_{2} + \dots a_{n}x_{n} \leq b\]
+The ILP problem is to determine if there exists $x_{i}$ that satisfies all the constraints.
+Thus for m such equations, an ILP problem can be represented as: \newline
+\[Ax \leq b\]
+where, \newline
+$A_{m \times n}$ = $\begin{bmatrix}
+a_{11} & a_{12} & \dots & a_{1n} \\
+a_{21} & a_{22} & \dots & a_{2n} \\
+\dots & \dots & \dots & \dots \\
+a_{m1} & a_{m2} & \dots & a_{mn} \\ 
+\end{bmatrix}$
+;  x = $\begin{bmatrix}
+x_{1} \\ x_{2} \\ . \\ . \\ . \\ x_{n} \\
+\end{bmatrix}$
+; b = $\begin{bmatrix}
+b_{1} \\ b_{2} \\ . \\ . \\ . \\ b_{n} \\
+\end{bmatrix}$ \newline
+\textbf {Goal:} To Prove that ILP is NP hard. \newline
+\textbf{Proof:} To prove that ILP is NP hard, we need to show SAT reduces to ILP. \newline
+Consider a SAT problem of m clauses, with each clause containing at most 2n literals( n variables and their complements). Each of these clause must be 1, such that the conjunction of all the clauses is true. Hence, for a general clause , $(x_{1} \vee x_{2} \vee \neg x_{3} \dots )$, we can write:\newline
+\hspace*{1cm} $x_{1} + x_{2} + \neg x_{3} + \dots \geq 1$ (atleast one literal in a clause is required to be true) \newline
+The complemented variables can be written as :\newline
+\hspace*{1cm} $\neg x_{3} = 1 - x_{3}$ \newline
+Then , the equation reduces to: \newline
+\hspace*{1cm} $x_{1} + x_{2} - x_{3} \geq 0$ \newline
+Thus, in general, in this manner we can translate every instance of a clause in 3-SAT to the form \newline
+  \[c_{1}x_{1} + c_{2}x_{2} + \dots + c_{n}x_{n} \geq d\]
+  \[-c_{1}x_{1} - c_{2}x_{2} - \dots - c_{n}x_{n} \leq -d\]
+  \[a_{1}x_{1} + a_{2}x_{2} + \dots + a_{n}x_{n} \leq b\]
+
+where d,b are inetegers and $c_{i},a_{i}$ is either 0/1, and $b = -d$ and $a_{i} = -c_{i}$ \newline
+In this way, by translating all the m clauses, we will get m such inequalities. Additionally, for a variable $x_{i}$, it must satisfy the additional two constraint 
+
+\[x_{i} \leq 1\]
+\[-x_{i} \leq 0\]
+
+Hence, for n variables, we get (m+2n) inequalities, which can be combined to be written  i n matrix form as : \newline
+\begin{equation}
+   Ax \leq b
+\end{equation}
+where A is $(m+2n) \times n$ matrix, x is an $n \times 1$ vector of variables and b is an $n \times 1$ of integers. Thus equation(3) represents an ILP problem. \newline
+Thus we have reduced SAT to ILP in polynomial time(m clauses to m+2n cequations), such that a solution to ILP will directly imply a solution to the SAT problem. Hence, \textbf {ILP is NP Hard}.(Proved). \newline
+
+\part{b}
+Given a solution for $x_{i}$, we can verify if the assignment for $x_{i}$ satisfies all the constraints in polynomial time. Hence, for the given version of ILP that requires only finding a satisfying solution to the constraints, it is \textbf {NP-complete}. However, in general ILP relates to problems of maximizing or minimizing a function under a given set of constraints. In such cases, given a solution for $x_{i}$, we cannot verify in polynomial time if that solution is maximizing/minimizing the objective function. In such cases, it is \textbf {NP-hard}. \newline
+
+\part{c}
+Given a colelction of linear equations of n 0/1 variables in $x_{i}$
+\[ a_{11}x_{1} + a_{12}x_{2} + \dots + a_{1n}x_{n} = b_{1} \]
+\[ a_{21}x_{1} + a_{22}x_{2} + \dots + a_{2n}x_{n} = b_{2} \]
+\[ \dots \dots \]
+\[ a_{n1}x_{1} + a_{n2}x_{2} + \dots + a_{nn}x_{n} = b_{n} \]
+If we sum all the equations(\textbf {this is in polynomial time}), then we get the following: 
+\[ (a_{11} + a_{21} + \dots + a_{n1})x_{1} + (a_{12} + a_{22} + \dots + a_{n2})x_{2} + \dots + (a_{1n} + a_{2n} + \dots + a_{nn})x_{n} = (b_{1} + b_{2} + \dots + b_{n})\]
+\begin{equation}
+ => A_{1}x_{1} + A_{2}x_{2} + \dots + A_{n}x_{n} = B
+\end{equation}
+Since, this is in mod 2 arithmatic, the rhs can have either of the following two cases: \newline
+\hspace*{0.5cm} \textbf {Case-1: rhs is 0: } Then a satisfying assignment is all $x_{i}$ set to 0. \newline
+\hspace*{0.5cm} \textbf {Case-2: rhs is 1: } Find the set of non-zero $A_{i}$'s. This will be a linear scan operation in polynomial time. Select one of these non-zero $A_{i}$, and set its corresponding $x_{i}$ to 1 , and all other $x_{j},j \neq i$, to 0. This is also a satisfying assignment. \newline
+Hence, we have shown the possibility to have a polynomial time algorithm to solve LINEQ(mod 2). \newline
+
+\part{d}
+Quadratic equations (mod 2) are defined such that, given n variables, each equation has the form, \newline
+\[ \sum_{i,j}C_{i,j}x_{i}x_{j} = b \]
+where, $C_{i,j}$ and b are 0/1( and addition/multiplication are mod 2). This QUADEC(mod 2) problem is to determine, given quadratic equations as above, if there is a 0/1 assignment such that the set of equations are satisfied. \newline
+\textbf {Goal:} To prove QUADEC(mod 2) is NP-Complete. \newline
+\textbf{Proof:} Given an assignment , we can verify whether that assignment satisfies the set of equations by plugging in the values of the assignment in the equations and this can be done in polynomial time. Thus, if additionally we can prove that 3-SAT is reducible to QUADEC(mod 2), we can claim that QUADEC(mod 2) is NP-Complete. \newline
+A 3-SAT problem is a conjunction of m clauses , with each clause being a disjunction of 3 literals. For a 3-SAT to be satisfiable, each of its m clauses must be individually satisfiable by an assignment. Consider a clause instance $(x_{i} \vee x_{j} \vee x_{k})$. This is equivalent to $x_{i}\oplus x_{j} \oplus x_{k} \oplus x_{i}x_{j} \oplus x_{j}x_{k} \oplus x_{k}x_{i} \oplus x_{i}x_{j}x_{k}$. This equivalency can be verified from their truth tables shown below in Table-5 and Table-6: \newline
+
+
+\begin{table}[ht]
+  \caption{Truth Table of $x_{i} \vee x_{j} \vee x_{k}$}
+  \centering
+  \begin{tabular}{c c c c}
+  \hline\hline
+  $x_{i}$ & $x_{j}$ & $x_{k}$ & $x_{i} \vee x_{j} \vee x_{k}$ \\[0.5ex]
+  \hline
+  0 & 0 & 0 & 0 \\
+  0 & 0 & 1 & 1 \\
+  0 & 1 & 0 & 1 \\
+  0 & 1 & 1 & 1 \\
+  1 & 0 & 0 & 1 \\
+  1 & 0 & 1 & 1 \\
+  1 & 1 & 0 & 1 \\
+  1 & 1 & 1 & 1 \\ [0.5ex]  
+  \end{tabular}
+  \label{table:nonlin}
+  \end{table}	  
+
+\begin{table}[ht]
+  \caption{Truth Table of $f = x_{i}\oplus x_{j} \oplus x_{k} \oplus x_{i}x_{j} \oplus x_{j}x_{k} \oplus x_{k}x_{i} \oplus x_{i}x_{j}x_{k}$}
+  \centering
+  \begin{tabular}{c c c c c c c c}
+  \hline\hline
+  $x_{i}$ & $x_{j}$ & $x_{k}$ & $x_{i}x_{j}$ & $x_{j}x_{k}$ & $x_{k}x_{i}$ & $x_{i}x_{j}x_{k}$ & $f$ \\[0.5ex]
+  \hline
+  0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+  0 & 0 & 1 & 0 & 0 & 0 & 0 & 1 \\
+  0 & 1 & 0 & 0 & 0 & 0 & 0 & 1 \\
+  0 & 1 & 1 & 0 & 1 & 0 & 0 & 1 \\
+  1 & 0 & 0 & 0 & 0 & 0 & 0 & 1 \\
+  1 & 0 & 1 & 0 & 0 & 1 & 0 & 1 \\
+  1 & 1 & 0 & 1 & 0 & 0 & 0 & 1 \\
+  1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 \\ [0.5ex]  
+  \end{tabular}
+  \label{table:nonlin}
+  \end{table}	  
+
+  Thus each clause of the form $(x_{i} \vee x_{j} \vee x_{k})$ translates to $x_{i}\oplus x_{j} \oplus x_{k} \oplus x_{i}x_{j} \oplus x_{j}x_{k} \oplus x_{k}x_{i} \oplus x_{i}x_{j}x_{k}$, which in mod-2 arithmatic can be written as $x_{i} + x_{j} + x_{k} + x_{i}x_{j} + x_{j}x_{k} + x_{k}x_{i} + x_{i}x_{j}x_{k}$. \newline
+Furthermore, any literal that is present in its complement form , $\bar{x_{i}}$, can be written in mod 2 arithmatic as:
+\[ \bar{x_{i}} = 1 + x_{i} \]
+
+Replacing the complement terms and rearranging the constants, every clause boils down to the form: \newline
+\[ x_{i} + x_{j} + x_{k} + x_{i}x_{j} + x_{j}x_{k} + x_{k}x_{i} + x_{i}x_{j}x_{k} = b_{p} \]
+where $b_{p}$ is 0/1 constant. \newline
+Next, in mod 2 arithmatic, $x_{i}$ is same as $x_{i}^2$. Thus we can replace the single terms in the above equation by theor square terms such that we get: \newline
+\begin{equation}
+ x_{i}^2 + x_{j}^2 + x_{k}^2 + x_{i}x_{j} + x_{j}x_{k} + x_{k}x_{i} + x_{i}x_{j}x_{k} = b_{m} 
+\end{equation}
+
+Now, the only problem to translate this to proper quadratic form as detailed earlier is the presence of the cubic term, $x_{i}x_{j}x_{k}$ . Let us define a variable $x_{m}$, such that \newline
+\[ x_{i}x_{m} = x_{i}x_{j}x_{k} \]
+that is, replace $x_{j}x_{k}$ by a separate variable $x_{m}$. Then equation(5) becomes: 
+\begin{equation}
+ x_{i}^2 + x_{j}^2 + x_{k}^2 + x_{i}x_{j} + x_{j}x_{k} + x_{k}x_{i} + x_{i}x_{m} = b_{p} 
+\end{equation}
+Additionally, we get :
+\[ x_{m} = x_{j}x_{k}\]
+Using mod 2 arithmatic, adding $x_{j}x_{k}$, we get
+\[ x_{m} + x_{j}x_{k}= x_{j}x_{k} + x_{j}x_{k}\]
+\begin{equation}
+ x_{m}^2 + x_{j}x_{k}= 0
+\end{equation}
+
+Both equation(6) and equation(7) are in quadratic forms. Thus, in this manner we can decompose every clause into two equations of quadratic form. For m clauses, thus there will be 2m equations, which is a \textbf {polynomial reduction}. Any satisfying assignment found for this set of 2m equations, will be a solution of the 3-SAT problem. \newline
+\textbf {Thus, 3-SAT reduces to QUADEC(mod 2) in polynomial time} . Hence QUADEC(mod 2) is \textbf {NP-Complete}.
+\newline
+
+\question{4}{Graphs - definitions \dots}
+
+\part{a} Given there are n nodes in a graph G of each node having a degree$\geq$2. Therefore, if V is the set of vertices, then:\newline
+\begin{equation}
+ \sum_{v \in V} degree(v) \geq 2 \times n  
+\end{equation}
+
+If E is the set of edges of the graph, then every edge, $e \in E$, contributes degrees to 2 vertices which forms its end points. Thus in the summation of degrees, each edge is counted twice. Hence we can write equation(8) as :\newline
+\[ 2 \times |E| \geq 2 \times n \]
+\begin{equation}
+ |E| \geq n
+\end{equation}
+
+\textbf {Argument:} Thus the number of edges will be greater than n. We will attempt to construct the graph and show a cycle must exist. Consider a set, UNUSED-VERTICES(\textbf {UNV}), to contain all the vertices in the graph initially, and a set,USED-VERTICES(\textbf {UV}), which is intially an empty set. Pick the first vertex from UNV, say v, and mark it as the current-node. Draw an edge from v to one of its adjacent neighbours, say w. Both v and w have used up one of their degrees. Put v in the UV set and make w the current-node. Next for w, draw an edge to one of its neighbours(other than v), say x( w is guaranteed to have atleast one more neighbours other than v due to its degree being 2). Then put w in UV and set x as the current node. This process can continue until one of the following 2 cases occur: \newline
+\hspace*{0.5cm} \textbf {(i)} You reach a node, say y, whose next edge is towards one of the vertices in the UV set. This results in a cycle since we are going back to one of the used nodes. \newline
+\hspace*{0.5cm} \textbf{(ii)} Or, you reach the last remaining vertex, say z, in UNV, in which case you have already drawn the (n-1) edges. Since, the number of edges is atleast n(from equation(9)), there is atleast one more edge to draw from z. The other end of this edge has to be in UV since, UNV is now empty with the removal of z. Thus the edge from z connects back to one of the used vertices, hence making a cycle. \newline
+Thus, to conclude the argument, if a graph G has all vertices with degree $\geq$ 2, then G has a cycle. \newline
+
+\part{b} Given an undirected graph of 10 nodes with degrees 2,3,4,4,7,1,4,5,3,2. Then the sum of the degrees of the vertices is \textbf {35}. Every edge contributes to the degree of 2 vertices, which are its end points. So, in the calculation of the sum of the degrees of the vertices, each edge is connected twice, so the 
+\[ \sum_{v \in V}degree(v) = 2 \times |E| \]
+where V is the set of vertices and E is the set of edges of the graph G. Clearly, the sum of degrees needs to be an even number, however in our given data, the sum of degrees turn out to be an odd number. So, there \textbf {does not} exists an undirected graph with the above mentioned degrees. \newline
 
 
 
+\part{c}
+
+  \algo \newline
+  \textbf {findOddCycle(G=(V,E))} \newline
+  \hspace*{0.5cm} \textbf {BFS}[Keys = Vertices] = $<distance, parent, parity>$ \newline
+  \hspace*{0.5cm} \textbf {DFS}[Keys = Vertices] = $<parent>$ \newline
+  \hspace*{0.5cm} getEdgeOdd = \textbf {detectOddCycle(G)} \newline
+  \hspace*{0.5cm} if (getEdgeOdd == NULL) \newline
+  \hspace*{1cm}		\textbf {Output}("No Odd Cycle Exists") \newline
+  \hspace*{0.5cm} else \newline
+  \hspace*{1cm}		a = getEdgeOdd[0]; b = getEdgeOdd[1] ; \newline
+  \hspace*{1.0cm}	\textbf {getPath-DFS-b-to-Root( G, b, Root)} \newline
+  \hspace*{1.0cm}	// Get the path elements from b to Root \newline
+  \hspace*{1.0cm}	pathLength-b-to-Root = 0; x = Root \newline
+  \hspace*{1.0cm}	\textbf {while} ( x!=b) \newline
+  \hspace*{1.5cm}		\textbf {path-b-to-Root}.push(DFS[x].parent) \newline
+  \hspace*{1.5cm}		x = DFS[x].parent \newline
+  \hspace*{1.5cm}		\textbf {pathLength-b-to-Root}++ \newline
+  \hspace*{1.0cm}	// Get the path elements Root to b from the BFS data \newline
+  \hspace*{1.0cm}	x = b; \newline
+  \hspace*{1.0cm}	\textbf {while} ( x!=Root) \newline
+  \hspace*{1.5cm}		\textbf {path-Root-to-b}.push(BFS[x].parent) \newline
+  \hspace*{1.5cm}		x = BFS[x].parent \newline
+  \hspace*{1.0cm}	// Get the path elements from Root to u from BFS \newline
+  \hspace*{1.0cm}	x = a; \newline
+  \hspace*{1.0cm}	\textbf {while}(x != Root) \newline
+  \hspace*{1.5cm}		\textbf {path-Root-to-a.push}(BFS[x].parent) \newline
+  \hspace*{1.5cm}		x = BFS[x].parent \newline
+  \newline
+  \hspace*{1.0cm}	if(pathLength-b-to-Root is ODD) \newline
+  \hspace*{1.5cm}		if(BFS[b].parity == 1) //Odd parity \newline
+  \hspace*{2.0cm}			OddPath = path-Root-to-a + (a,b) + path-b-to-Root \newline
+  \hspace*{1.5cm}		else // even parity \newline
+  \hspace*{2.0cm}			OddPath = path-Root-to-b + path-b-to-Root \newline
+  \hspace*{1.0cm}	else // length is even \newline
+  \hspace*{1.5cm}		if(BFS[b].parity == 1) // Odd Parity \newline
+  \hspace*{2.0cm}			OddPath = path-Root-to-b + path-b-to-Root \newline
+  \hspace*{1.5cm}		else // even parity \newline
+  \hspace*{2.0cm}			OddPath = path-Root-to-a + (a,b) + path-b-to-Root \newline
+  \hspace*{1.0cm}       \textbf {Output}("Found-Odd-Path = ",OddPath) \newline
+  \newline
+  \textbf {detectOddCycle(G)} \newline
+  \hspace*{0.5cm} // Initialize the vertex data structure for BFS \newline
+  \hspace*{0.5cm} for each $v \in V$ \newline
+  \hspace*{1.0cm}	BFS[v].distance = $\infty$ \newline
+  \hspace*{1.0cm}	BFS[v].parent = NULL \newline
+  \hspace*{1.0cm}	BFS[v].parent = '-' \newline
+  \hspace*{0.5cm} Root = SelectNode(G) \newline
+  \hspace*{0.5cm} BFS[Root].distance = 0 \newline
+  \hspace*{0.5cm} BFS[Root].parity   = 0 \newline
+  \hspace*{0.5cm} Queue.insert(Root) \newline
+  \hspace*{0.5cm} While( not Queue.empty())  \newline
+  \hspace*{1.0cm}	currentNode = Queue.delete() \newline
+  \hspace*{1.0cm}	for $x \in {(currentNode, x) \in E}$ \newline
+  \hspace*{1.5cm}		if( BFS[x].distance == $\infty$ ) \newline
+  \hspace*{2.0cm}			BFS[x].distance = BFS[currentNode].distance + 1 \newline
+  \hspace*{2.0cm}			BFS[x].parity = $\neg$BFS[currentNode].parity \newline
+  \hspace*{2.0cm}			BFS[x].parent = currentNode \newline
+  \hspace*{2.0cm}			Queue.insert(x) \newline
+  \hspace*{1.5cm}		else // \textbf {Means x has already been visited} \newline
+  \hspace*{2.0cm}			if(BFS[x].parity == BFS[currentNode].parity) // parity matches detecting existence of a cycle \newline
+  \hspace*{2.5cm}				return (currentNode, x)
 
 
 
