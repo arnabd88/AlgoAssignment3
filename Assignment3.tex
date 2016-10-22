@@ -195,7 +195,7 @@ The complemented variables can be written as :\newline
 \hspace*{1cm} $\neg x_{3} = 1 - x_{3}$ \newline
 Then , the equation reduces to: \newline
 \hspace*{1cm} $x_{1} + x_{2} - x_{3} \geq 0$ \newline
-Thus, in general, in this manner we can translate every instance of a clause in 3-SAT to the form \newline
+Thus, in general, in this manner we can translate every instance of a clause in SAT to the form \newline
   \[c_{1}x_{1} + c_{2}x_{2} + \dots + c_{n}x_{n} \geq d\]
   \[-c_{1}x_{1} - c_{2}x_{2} - \dots - c_{n}x_{n} \leq -d\]
   \[a_{1}x_{1} + a_{2}x_{2} + \dots + a_{n}x_{n} \leq b\]
@@ -221,9 +221,9 @@ Given a colelction of linear equations of n 0/1 variables in $x_{i}$
 \[ a_{11}x_{1} + a_{12}x_{2} + \dots + a_{1n}x_{n} = b_{1} \]
 \[ a_{21}x_{1} + a_{22}x_{2} + \dots + a_{2n}x_{n} = b_{2} \]
 \[ \dots \dots \]
-\[ a_{n1}x_{1} + a_{n2}x_{2} + \dots + a_{nn}x_{n} = b_{n} \]
+\[ a_{m1}x_{1} + a_{m2}x_{2} + \dots + a_{mn}x_{n} = b_{m} \]
 If we sum all the equations(\textbf {this is in polynomial time}), then we get the following: 
-\[ (a_{11} + a_{21} + \dots + a_{n1})x_{1} + (a_{12} + a_{22} + \dots + a_{n2})x_{2} + \dots + (a_{1n} + a_{2n} + \dots + a_{nn})x_{n} = (b_{1} + b_{2} + \dots + b_{n})\]
+\[ (a_{11} + a_{21} + \dots + a_{m1})x_{1} + (a_{12} + a_{22} + \dots + a_{m2})x_{2} + \dots + (a_{1n} + a_{2n} + \dots + a_{mn})x_{n} = (b_{1} + b_{2} + \dots + b_{m})\]
 \begin{equation}
  => A_{1}x_{1} + A_{2}x_{2} + \dots + A_{n}x_{n} = B
 \end{equation}
@@ -288,7 +288,7 @@ Replacing the complement terms and rearranging the constants, every clause boils
 where $b_{p}$ is 0/1 constant. \newline
 Next, in mod 2 arithmatic, $x_{i}$ is same as $x_{i}^2$. Thus we can replace the single terms in the above equation by theor square terms such that we get: \newline
 \begin{equation}
- x_{i}^2 + x_{j}^2 + x_{k}^2 + x_{i}x_{j} + x_{j}x_{k} + x_{k}x_{i} + x_{i}x_{j}x_{k} = b_{m} 
+ x_{i}^2 + x_{j}^2 + x_{k}^2 + x_{i}x_{j} + x_{j}x_{k} + x_{k}x_{i} + x_{i}x_{j}x_{k} = b_{p} 
 \end{equation}
 
 Now, the only problem to translate this to proper quadratic form as detailed earlier is the presence of the cubic term, $x_{i}x_{j}x_{k}$ . Let us define a variable $x_{m}$, such that \newline
@@ -445,9 +445,38 @@ In addition to these, to determine the smallest travel time, one needs to consid
 Consider a traveller arrives at airport 'i' at time 't', and we want to determine the flight it will take to go from 'i' to 'j' via the available direct flights, that is, in the directed graph, there are multiple edges from i to j and we need to decide which edge to consider for the travel. Suppose the available flights in the schedule from 'i' to 'j' , after the arrival time t, are as $[t_{ij,1}, t_{ij,2}, t_{ij,3}, \dots]$, and each of those flights have a flight duration of $[f_{ij,1}, f_{ij,2}, f_{ij,3}, \dots]$ where $t_{ij,k}$ indicates the start-time and $f_{ij,k}$ indicates the in-air flight duration of the k'th flight from 'i' to 'j'. We must choose that flight, which minimizes the combination of \textbf {layover + flight duration}. \newline
   Thus, we define the objective function, DURATION-COST, that can be written as: \newline
   \begin{equation}
-	  DURATION-COST = min \bigg \{ \infty, \underset{k=1,2,..,m}{min}{\{t_{ij,k} - t + f_{ij,k}\}\bigg |_{t_{ij,k}-t \geq 10}}  \bigg \}
+	  DURATION-COST = min \bigg \{ \infty, \underset{k=1,2,..,h}{min}{\{t_{ij,k} - t + f_{ij,k}\}\bigg |_{t_{ij,k}-t \geq 10}}  \bigg \}
   \end{equation}
 
  This DURATION-COST is the modified cost of each path. Now we can apply Dijkstra's algorithm to find the shortest path of this graph using the cost function of equation(10), and that shortest path will correspond to the route for the smallest travel time. \newline
+
+ \algo \newline
+ \textbf {SmallestTimeTraveller(G, Source)}: \newline
+ \hspace*{0.5cm} TimeCost[Source] = CurrentTime \newline
+ \hspace*{0.5cm} \textbf {for} each $n \in Vertices$ \newline
+ \hspace*{1.0cm} 	\textbf {if} (n is \textbf {not Source}) \newline
+ \hspace*{1.5cm} 		TimeCost[n] = $\infty$ \newline
+ \hspace*{1.5cm} 		Parent[n]   = Undef \newline
+ \hspace*{1.0cm} 	\textbf {PriQueue}.add(n, TimeCost[n]) \newline
+ \hspace*{0.5cm} \textbf {while} ( $\neg$ \textbf {PriQueue}.empty() ) \newline
+ \hspace*{1.0cm} 	u = \textbf {PriQueue.extractMin()} // first only source will come, since others have cost infinity \newline
+ \hspace*{1.0cm} 	\textbf {for} $v \in$ adjacencyList(u) \newline
+ \hspace*{1.5cm} 		\textbf {DURATION-COST} = $ min \bigg \{ \infty, \underset{k=1,2,..,h}{min}{\{t_{ij,k} - TimeCost[u] + f_{ij,k}\}\bigg |_{t_{ij,k}-TimeCost[u] \geq 10}}  \bigg \}$ \newline
+ \hspace*{1.5cm}		ExpectedTime = TimeCost[u] + DURATION-COST \newline
+ \hspace*{1.5cm}		\textbf {if}(ExpectedTime $<$ TimeCost[v]) \newline
+ \hspace*{2.0cm}			TimeCost[v] = ExpectedTime \newline
+ \hspace*{2.0cm}			parent[v]   = u \newline
+ \hspace*{2.0cm}			\textbf {PriQueue.update}(v, ExpectedTime) \newline
+ \hspace*{0.5cm} \textbf {return} TimeCost, Parent \newline
+ \newline
+
+ \correctness Our algorithm precisely uses Dijkstra's algorithm with the variation of modifying the evalaution of the cost of a route from port 'i' to port 'j'. It 
+
+ \runtime Here we use a heap based priority queue, for which each of the update and extractMin operation takes $O(\log n)$ time. In general, for  Dijkstra's algorithm run on a directed graph G of n nodes and m edges, is $O((m+n)\log n)$, however in these cases, each edge represents a valid path between two nodes that can be taken to travel in that route. In our case, there are suppossedly h possible direct paths between two nodes, out of which only one will be taken to evaluate the DURATION-COST, that is the one that minimizes the objective function. Thus, we have no way to find out the number of valid routes from m, however we can upper-bound that number by $n^2$, that is the worst case for a connected graph. \textbf {Additionally} we have the cost of minimizing the objective function at every node. Note that, at every node, we run a scan operation to find the minima of the objective function, which means at every node, all its outward degrees needs to be considered exactly once. Summing them up equals to all outgoing edges of the n nodes which is basically the total number of flights, 'm'. Thus the total running time is expressed as: \newline
+\textbf {Running Time} = $O((n + n^2)\log n + m)$ = $O(n^2\log n + m)$ \newline
+
+\correctness 
+  Let R be the set of nodes for which the shortest travel time from Source,A, has been found. \textbf {Base-Case(|R|==1):}  Since R only gets larger(no existence of negatove paths), the only time |R|==1 is when R={source} and TimeCost[source] = 0. Thus, base case is satisfied. \newline
+  By inductive hypotheses, suppose for every vertex $v \in R$, we have found the shortest time of travel. Let u be the next node that is added to R
 
 \end{document} 
