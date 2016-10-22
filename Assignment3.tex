@@ -470,13 +470,33 @@ Consider a traveller arrives at airport 'i' at time 't', and we want to determin
  \hspace*{0.5cm} \textbf {return} TimeCost, Parent \newline
  \newline
 
- \correctness Our algorithm precisely uses Dijkstra's algorithm with the variation of modifying the evalaution of the cost of a route from port 'i' to port 'j'. It 
+ \textbf {Analysis:}
 
  \runtime Here we use a heap based priority queue, for which each of the update and extractMin operation takes $O(\log n)$ time. In general, for  Dijkstra's algorithm run on a directed graph G of n nodes and m edges, is $O((m+n)\log n)$, however in these cases, each edge represents a valid path between two nodes that can be taken to travel in that route. In our case, there are suppossedly h possible direct paths between two nodes, out of which only one will be taken to evaluate the DURATION-COST, that is the one that minimizes the objective function. Thus, we have no way to find out the number of valid routes from m, however we can upper-bound that number by $n^2$, that is the worst case for a connected graph. \textbf {Additionally} we have the cost of minimizing the objective function at every node. Note that, at every node, we run a scan operation to find the minima of the objective function, which means at every node, all its outward degrees needs to be considered exactly once. Summing them up equals to all outgoing edges of the n nodes which is basically the total number of flights, 'm'. Thus the total running time is expressed as: \newline
 \textbf {Running Time} = $O((n + n^2)\log n + m)$ = $O(n^2\log n + m)$ \newline
 
 \correctness 
-  Let R be the set of nodes for which the shortest travel time from Source,A, has been found. \textbf {Base-Case(|R|==1):}  Since R only gets larger(no existence of negatove paths), the only time |R|==1 is when R={source} and TimeCost[source] = 0. Thus, base case is satisfied. \newline
-  By inductive hypotheses, suppose for every vertex $v \in R$, we have found the shortest time of travel. Let u be the next node that is added to R
+  Let R be the set of nodes for which the shortest travel time from Source,A, has been found. \textbf {Base-Case($|R|==1$):}  Since R only gets larger(no existence of negatove paths), the only time $|R|==1$ is when R={source} and TimeCost[source] = 0. Thus, base case is satisfied. \newline
+  By inductive hypotheses, suppose for every vertex $v \in R$, we have found the shortest time of travel. Let u be the next node that is added to R, such that, $R^\prime = R \cup \{u\}$. TimeCost(v) denotes the shortest path in terms of time-travel cost from source to every $v \in R$. Suppose for contradiction, that the shortest path from source-to-u is Q and has cost length: \newline
+  \[ l(Q) < TimeCost[u] \]
+  This has two possibilites: \newline
+  (1) Q starts in $R^\prime$, and leaves $R^\prime$ at some node and then reaches u. In this case, we assume that the minimizer of each route is correct and the only issue is in finding the shortest route. \newline
+  (2) The flight path we had taken from the parent of the 'u', say k, to reach 'u' for the shortest path, was not optimal and there is a better flight option.  \newline
+  We analyze below each of these cases separately: \newline
+  \textbf {Case-1:} Let xy be the first edge along Q that leaves $R^\prime$. Let $Q_{x}$ be the route source$\rightarrow$x, which is a subpath of Q. Then the following holds:\newline
+  \[ l(Q_{x} + l(x\rightarrow y) \leq l(Q) \]
+  Since, x is in $R^\prime$, TimeCost[x] is the travel time of the shortest path source-to-x , and by the induction hypotheses, \newline
+  \[ TimeCost[x] \leq l(Q_{x}) \]
+  Then, replacing in the previous equation, we get, \newline
+  \[ TimeCost[x] + l(x\rightarrow y) \leq l(Q) \]
+  Since, y is adjacent to x, TimeCost[y] must have been updates by the algorithm as : \newline
+  \[ TimeCost[y] \leq TimeCost[x] + l(x \rightarrow y) \]
+  Finally, since 'u' was picked by the algorithm, and y was not chosen until the current step, this implies: \newline
+  \[ TimeCost[u] < TimeCost[y] \]
+  Back substituting this expressions in the previous ones, we get: \newline
+  \[ TimeCost[u] < TimeCost[u] \]
+  which is a clear contradiction. Thus, TimeCost[u] is the shortest travel time from source-to-u, given our minimization function across multiple flights between two nodes is correct(we address this issue in the next case).  \newline
+  \textbf {Case-2:} Let us consider again a contradiction that there exists a flight path from the parent(k) of 'u' to 'u' that would have given a better minimal time for 'u'. Since our objective function,'DURATION-COST', is a minimizer over all the possible flights from 'k' to 'u' for flights that start after TimeCost[k]+10, then the only possibility of getting a shorter flight in this route is of the traveller arrives at 'k' before TimeCost[k]. However, by our inductive hypotheses, all the nodes in R are already at their minimal travel time cost, hence it is \textbf {not possible} to arrive at 'k' earlier than TimeCost[k]. Hence, the chosen flight from 'k' to 'u' is the optimal flight that minimizes the travel time cost for source-to-u. \newline
+  The above two cases guarantees the correctness of the algorithm. \newline
 
 \end{document} 
