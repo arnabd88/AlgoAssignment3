@@ -376,27 +376,78 @@ where V is the set of vertices and E is the set of edges of the graph G. Clearly
   \newline
   \textbf {detectOddCycle(G)} \newline
   \hspace*{0.5cm} // Initialize the vertex data structure for BFS \newline
-  \hspace*{0.5cm} for each $v \in V$ \newline
+  \hspace*{0.5cm} \textbf {for} each $v \in V$ \newline
   \hspace*{1.0cm}	BFS[v].distance = $\infty$ \newline
   \hspace*{1.0cm}	BFS[v].parent = NULL \newline
   \hspace*{1.0cm}	BFS[v].parent = '-' \newline
   \hspace*{0.5cm} Root = SelectNode(G) \newline
   \hspace*{0.5cm} BFS[Root].distance = 0 \newline
   \hspace*{0.5cm} BFS[Root].parity   = 0 \newline
-  \hspace*{0.5cm} Queue.insert(Root) \newline
-  \hspace*{0.5cm} While( not Queue.empty())  \newline
-  \hspace*{1.0cm}	currentNode = Queue.delete() \newline
-  \hspace*{1.0cm}	for $x \in {(currentNode, x) \in E}$ \newline
-  \hspace*{1.5cm}		if( BFS[x].distance == $\infty$ ) \newline
+  \hspace*{0.5cm} \textbf {Queue.insert}(Root) \newline
+  \hspace*{0.5cm} \textbf {While}( not Queue.empty())  \newline
+  \hspace*{1.0cm}	currentNode = \textbf {Queue.delete()} \newline
+  \hspace*{1.0cm}	\textbf {for} $x \in {(currentNode, x) \in E}$ \newline
+  \hspace*{1.5cm}		\textbf {if}( BFS[x].distance == $\infty$ ) \newline
   \hspace*{2.0cm}			BFS[x].distance = BFS[currentNode].distance + 1 \newline
   \hspace*{2.0cm}			BFS[x].parity = $\neg$BFS[currentNode].parity \newline
   \hspace*{2.0cm}			BFS[x].parent = currentNode \newline
-  \hspace*{2.0cm}			Queue.insert(x) \newline
-  \hspace*{1.5cm}		else // \textbf {Means x has already been visited} \newline
-  \hspace*{2.0cm}			if(BFS[x].parity == BFS[currentNode].parity) // parity matches detecting existence of a cycle \newline
-  \hspace*{2.5cm}				return (currentNode, x)
+  \hspace*{2.0cm}			\textbf {Queue.insert(x)} \newline
+  \hspace*{1.5cm}		\textbf {else} // \textbf {Means x has already been visited} \newline
+  \hspace*{2.0cm}			\textbf {if}(BFS[x].parity == BFS[currentNode].parity) // parity matches detecting existence of a cycle \newline
+  \hspace*{2.5cm}				\textbf {return} (currentNode, x) \newline
+\newline
+  
+  \textbf {getPathDFS-b-to-Root(G,b,Root)} \newline
+  \hspace*{0.5cm} DFS[b].parent = NULL \newline
+  \hspace*{0.5cm} Stack.push(b) \newline
+  \hspace*{0.5cm} \textbf {while} ( not Stack.empty() ) \newline
+  \hspace*{1.0cm}	x = Stack.pop() \newline	
+  \hspace*{1.0cm}	\textbf {for} $w \in {(x,w) \in E}$ \newline
+  \hspace*{1.5cm}		DFS[w].parent = x \newline
+  \hspace*{1.5cm}		\textbf {if} ( w == Root ) \newline
+  \hspace*{2.0cm}			//Path found from b to Root \newline
+  \hspace*{2.0cm}			return \newline
+  \hspace*{1.5cm}		\textbf {else}: \newline
+  \hspace*{2.0cm}			Stack.push(w) \newline
+  \newline
+
+ \textbf {Analysis and} \correctness \newline
+ Given a strongly connected graph, G=(V,E), where V is the set of vertices and E is the set of edges, To find an odd cycle we use the bipartiteness btest on the graph. Select a random node and mark it as the Root. Perform a BFS search starting at this root node as shown in Fig 2. \newline
+  \begin{figure}[h!]
+   \centering
+  \includegraphics[width=8cm, height=8cm]{Prob4c}
+  \caption{Finding the odd-cycle}
+  \end{figure}
+
+  Each node has a parity field. The root's parity field is marked as 0. For every node mark the parity of its children as its own parity's complement. Thus every node in the odd layer will have parity value of 1 and every node in the even layer will have a parity value of 0. If during the exploration using BFS we reach a node 'a', and discover an edge (a,b) where 'b' has already been discovered and marked with the same parity as that of 'a', that means , in the undirected version of the graph we have detected an odd cycle(bipartiteness test fails) namely Root $\rightarrow$ a $\rightarrow$ b $\rightarrow$ Root, but this excat cycle is not true for the directed case, since both a and b were reached from the Root along a forward moving path, and hence no cycle. However, we show that for a strongly connected directed graph, an odd cycle detection in its undirected version implies the existence of an odd cycle in its directed version and can be found by the mechanism described in this algorithm. Consider the following figure. \newline
+  \begin{figure}[h!]
+   \centering
+  \includegraphics[width=15cm, height=8cm]{Prob4c_odd}
+  \caption{Odd cycle of undirected graph with the reverese paths for strongly connected graph}
+  \end{figure}
+
+  a,b,c,d,e,a will result in an odd edge detection in the undirected graph. However, in the directed version, is a direction mismatch between e$\rightarrow$a and b$\rightarrow$a. But since it is a strongly connected graph, there will be another path from a$\rightarrow$b as well. The length of this path may be even, like a$\rightarrow$h$\rightarrow$b or odd, like a$\rightarrow$f$\rightarrow$g$\rightarrow$b. If the even size exists, then \textbf {a$\rightarrow$h$\rightarrow$b$\rightarrow$a} form an odd cycle. If the odd path exists, then \textbf {a$\rightarrow$f$\rightarrow$g$\rightarrow$b$\rightarrow$c$\rightarrow$d$\rightarrow$e$\rightarrow$a} is the odd cycle. \textbf {Thus there will always exist an odd cycle if the bipartiteness test fails.} We use this exact property to find the odd cycle. \newline
+  Coming back to the point where we detected the existence of odd-cycle by parity matching(bipartiteness fails). We keep track of this edge (a,b), and terminate the BFS search here. Next, we start a DFS search to fiind the path from 'b' to the Root(Figure-2, this path exists since it is strongly connected and hence we are guaranteed to find this path using DFS). Once we find this path, the following cases are analyzed each of which is able to output an odd-cycle. \newline
+  \hspace*{0.5cm} \textbf{If b$\rightarrow$Root is even length and Root$\rightarrow$b, which is of same parity as Root$\rightarrow$a, is odd length} : Then the odd cycle is \textbf {Root $\rightarrow$ b $\rightarrow$ Root} \newline
+  \hspace*{0.5cm} \textbf{If b$\rightarrow$Root is even length and Root$\rightarrow$b, which is of same parity as Root$\rightarrow$a, is even length} : Then the odd cycle is \textbf {Root $\rightarrow$ a $\rightarrow$ b $\rightarrow$ Root} \newline
+  \hspace*{0.5cm} \textbf{If b$\rightarrow$Root is odd length and Root$\rightarrow$b, which is of same parity as Root$\rightarrow$a, is odd length} : Then the odd cycle is \textbf {Root $\rightarrow$ a $\rightarrow$ b $\rightarrow$ Root} \newline
+  \hspace*{0.5cm} \textbf{If b$\rightarrow$Root is odd length and Root$\rightarrow$b, which is of same parity as Root$\rightarrow$a, is even length} : Then the odd cycle is \textbf {Root $\rightarrow$ b $\rightarrow$ Root} \newline
+The algorithm guarantees that if the odd-cycle is detected for the undirected graph it will find the correct odd-cycle for the strongly connected directed graph. It is trivial to note that if the undirected formation does not have an odd cycle, then the directed graph cannot have an odd-cycle as well.  \newline
+
+\runtime 
+   The main computation of the algorithm is centered around running the BFS followed by a DFS .  Both BFS and DFS takes $O(|E| + |V|)$ time. The rest of the computations are precisely about back tracking the search results produced by BFS and DFS to produce the final odd-cycles. These traversals will be $O(|E|)$. Additionally, the conditional blocks map to constant time operations. Thus, the overall running time of this algorithm is $O(|E| + |V|)$. \newline
 
 
+\question{5}{Weary traveler \dots}
+  Given there are n airports and m flights, the goal is to find the smallest total travel time from a source airport(S) to a destinations airport(d). \newline
+We precisely apply the Dijkstra's algorithm to find the shortest path(in regards to travel time) with modifications in the mechanism to determine the cost of each path from one airport to another. The connectivity of the $m$ flights can be formed into a directed graph with edge(u,v) indicating the availability of a flight from u to v. Important to note here, is that from a port i there can be multiple direct flights to  another port 'j', and the m flights comprise of all such flights. Thus, unlike other problems where there is a single edge between two nodes in a specific direction and we treat the cardinality of the edges as the quantification of the connectivity of the nodes, in this case m does not directly implies the connectivity of the nodes. Each of these edges have an associated cost of flight duration. \newline
+In addition to these, to determine the smallest travel time, one needs to consider the layover times at every airport. Also, we are given a constraint that there will always be a minimum layover of 10 mins. \newline
+Consider a traveller arrives at airport 'i' at time 't', and we want to determine the flight it will take to go from 'i' to 'j' via the available direct flights, that is, in the directed graph, there are multiple edges from i to j and we need to decide which edge to consider for the travel. Suppose the available flights in the schedule from 'i' to 'j' , after the arrival time t, are as $[t_{ij,1}, t_{ij,2}, t_{ij,3}, \dots]$, and each of those flights have a flight duration of $[f_{ij,1}, f_{ij,2}, f_{ij,3}, \dots]$ where $t_{ij,k}$ indicates the start-time and $f_{ij,k}$ indicates the in-air flight duration of the k'th flight from 'i' to 'j'. We must choose that flight, which minimizes the combination of \textbf {layover + flight duration}. \newline
+  Thus, we define the objective function, DURATION-COST, that can be written as: \newline
+  \begin{equation}
+	  DURATION-COST = min \bigg \{ \infty, \underset{k=1,2,..,m}{min}{\{t_{ij,k} - t + f_{ij,k}\}\bigg |_{t_{ij,k}-t \geq 10}}  \bigg \}
+  \end{equation}
 
+ This DURATION-COST is the modified cost of each path. Now we can apply Dijkstra's algorithm to find the shortest path of this graph using the cost function of equation(10), and that shortest path will correspond to the route for the smallest travel time. \newline
 
 \end{document} 
